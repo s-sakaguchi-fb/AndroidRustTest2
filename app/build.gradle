@@ -1,0 +1,74 @@
+plugins {
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+    id 'org.mozilla.rust-android-gradle.rust-android'  // 追加
+}
+
+android {
+    namespace 'com.freebit.rusttest'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.freebit.rusttest"
+        minSdk 29
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // 追加：念のためARM64以外を非対応とする
+        ndk {
+            abiFilters 'arm64-v8a'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    // 追加 Start ---
+    sourceSets {
+        main {
+            jniLibs.srcDirs += ['src/main/lib']  // libc++_shared.soを内包しないと実行できないため、ここに配置すること
+        }
+    }
+    // 追加 End ---
+}
+
+// 追加 Start ---
+cargo {
+    module  = "src/main/rust/tokenizersjni"
+    libname = "tokenizersjni"
+    targets = ["arm64"]
+    verbose = true
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == "javaPreCompileDebug" || task.name == "javaPreCompileRelease") {
+        task.dependsOn "cargoBuild"
+    }
+}
+// 追加 End ---
+
+dependencies {
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.activity
+    implementation libs.androidx.constraintlayout
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}
