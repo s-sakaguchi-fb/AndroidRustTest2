@@ -32,7 +32,8 @@ linker = "（Android NDKへのパス）/toolchains/llvm/prebuilt/darwin-x86_64/b
 ```
 python
 ```
-が実行可能か確認。`python`は実行できないが`python3`は実行可能な場合、シンボリックリンクを貼るなどで`python`コマンドを実行可能とする必要がある。
+が実行可能か確認。`python`は実行できないが`python3`は実行可能な場合、シンボリックリンクを貼るなどで`python`コマンドを実行可能とする必要がある。\
+<br>
 
 ## ファイル構成
 * app
